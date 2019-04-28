@@ -7,8 +7,20 @@ import math
 import csv
 import collections
 import sys
+from anova.Anova_Functions_Main import *
 
-CorrelationCoeff = collections.namedtuple('CorrelationCoeff', ['corr', 'isSignificant'])
+class LinearRegressionResponse:
+	equtation_str : None
+	equation_params : None
+	r_values : []
+	anova : AnovaResponse()
+	
+class CorrelationCoeff :
+	param1 : None
+	param2: None
+	corr_value : None
+	isSignificant : None
+	logMessage : None
 
 def round_float(floatValue) :
 	return round(floatValue, 2)
@@ -45,37 +57,25 @@ def find_corr_coeff(dataSet, featureColumn, actualValueColumn) :
 	standard_deviationOfFeatureColumn = standard_deviation(dataSet, featureColumn)
 	standard_deviationOfValueColumn = standard_deviation(dataSet, actualValueColumn)
 	cor_r = round_float((cor_num)/(standard_deviationOfFeatureColumn*standard_deviationOfValueColumn))
-	return CorrelationCoeff(cor_r, (abs(cor_r) > (1.96/math.sqrt(len(dataSet)))))
+	corr = CorrelationCoeff()
+	corr.param1 = featureColumn
+	corr.param2 = actualValueColumn
+	corr.corr_value = cor_r
+	corr.isSignificant = (abs(cor_r) > (1.96/math.sqrt(len(dataSet)))) 
+	significant_stmt = "It is significant" if corr.isSignificant else "It is not significant"
+	corr.logMessage = "Correlation Coefficient of feature column '%s' with value column '%s' is %s. %s." % (featureColumn, actualValueColumn, cor_r, significant_stmt)
+	return corr
 
-def check_correlation_coeff(inputFile , valueColumn, *featureColumns ) :
-	data = pd.read_csv(inputFile)
-	print("--------------------------Correlation Coefficient ---------------------- ")
+def check_correlation_coeff(data , valueColumn, *featureColumns ) :
+	corr_coeff_arr = []
 	for feature in featureColumns:
 			corr_value = find_corr_coeff(data, feature, valueColumn)
-			significant_stmt = "It is significant" if corr_value.isSignificant else "It is not significant"
-			print ("Correlation Coefficient of feature column %s with value column %s is %s. %s." % (feature, valueColumn, corr_value.corr, significant_stmt))
+			corr_coeff_arr.append(corr_value)
+	return corr_coeff_arr		
 
-# def find_parameters(inputFile, featureColumn, actualValueColumn) :
-# 	# y = mx + c
-# 	data = pd.read_csv(inputFile)
-# 	r1c1 = sum_of_squares(data, featureColumn)
-# 	r1c2 = sum_of_columns(data,featureColumn)
-# 	r2c1 = sum_of_columns(data, featureColumn)
-# 	r2c2 = len(data)
-# 	A = np.array([[r1c1, r1c2],[r2c1, r2c2]])
-
-# 	b1 = sum_of_muliplication_of_cols(data, featureColumn,actualValueColumn)
-# 	b2 =  sum_of_columns(data, actualValueColumn)
-# 	B = np.array([b1, b2]) 
-	
-# 	return np.linalg.solve(A, B)
-
-
-def find_parameters_for_multivariate(inputFile, actualValueColumn, *featureColumn ) :
-	# y = mx + c
+def find_parameters_for_multivariate(dataset, actualValueColumn, *featureColumn ) :
 	features = list(featureColumn)
 	features.append("c")
-	dataset = pd.read_csv(inputFile)
 	data = dataset
 	data["c"] = 1
 
@@ -100,7 +100,7 @@ def find_parameters_for_multivariate(inputFile, actualValueColumn, *featureColum
 	print("------------------------------------------------------------------------")
 	params = np.linalg.solve(A, B)
 	roundedParams = np.asarray([round_float(param) for param in params])
-	build_anova_table(inputFile, params,actualValueColumn, *featureColumn)
+	#build_anova_table(inputFile, params,actualValueColumn, *featureColumn)
 	return roundedParams
 
 
@@ -108,6 +108,16 @@ def estimate_value(params, *featureValue) :
 	parameters = params[:-1]
 	output = (parameters.dot(featureValue)) + params[-1]
 	return output
+
+def calcualate_y_cap(dataSet, params, targetColumn, *featureNames) :
+	features = list(featureNames)
+	features.append("c")
+	dataSet["estimate_value"] = params[len(params)-1]
+	i = 0
+	while i < len(featureNames) :
+		dataSet["estimate_value"] = dataSet["estimate_value"] + params[i] * dataSet[featureNames[i]]
+		i = i+1
+	return 	dataSet["estimate_value"]
 
 def build_anova_table(inputFile, params, targetColumn, *featureNames) :
 	features = list(featureNames)
@@ -135,26 +145,29 @@ def build_anova_table(inputFile, params, targetColumn, *featureNames) :
 	print(anovastats)
 	print("------------------------------------------------------------------------")
 
-def main(inputFile, targetColumn, *featuresAndValue):
-	features =[elem.split('=', 1)[0] for elem in featuresAndValue]
-	values =[float(elem.split('=', 1)[1]) for elem in featuresAndValue]
-	check_correlation_coeff(inputFile,targetColumn, *features)
-	params = find_parameters_for_multivariate(inputFile,targetColumn,*features,)
-	SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
+
+def display_linear_equation(params,*features):
 	strval =""
 	i = 0
 	while i < len(params) -1 :
 		strval = strval + str(params[i]) + "("+features[i]+")" + (" + " if params[i+1] >= 0 else " ")
-		#strval = strval + str(params[i]) + "x" + str(i+1).translate(SUB) + "+ "
 		i += 1
 	strval  = strval + str(params[i])
-	output = estimate_value(params, *values)
 	print("Equation : ", strval )
-	print("Output : ", output )
+	return strval
 
-if __name__ == "__main__" :
-	#main(sys.argv[1],sys.argv[2],sys.argv[3:])
-	main("test/data/multivariate-date.csv","Salary","Education=16","Experience=5","Hours per week=50")
-	
+def calculate_f_statistic(y_arr, ycap_arr, m, alpha_value):
+    # Validating inputs
+    dfr = m -1
+
+    if len(y_arr) != len(ycap_arr):
+        raise ValueError('Mismatch in the size of y and ^y arrays')
+
+    return Anova().compute_anova(y_arr,ycap_arr, dfr, alpha_value)
+
+
+
+
+
 
 

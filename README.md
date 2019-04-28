@@ -3,17 +3,17 @@ This repo is for the project assignment of Data Analytics 2019 Jan-May batch.
 
 
 # statistics and linear regression Module
-[lr_functions.py ](lr_functions.py)
+[lr_utils.py ](lr_utils.py)
 It is an utility to for estimating the value using linear regression model. It works for multivariate data.
 
 This can be run using the following commnad
 
 ```
-main("<csv data file>","<target column>","<x1= value1>","<x2= value2>",...,"<x3= value3>")
+LinearRegression().solve_and_estimate("<csv data file>","<target column>","<x1= value1>","<x2= value2>",...,"<x3= value3>")
 ```
 Sample :
 ```
-main("data/multivariate-date.csv","Salary","Education=16","Experience=5","Hours per week=50")
+LinearRegression().solve_and_estimate("data/multivariate-date.csv","Salary","Education=16","Experience=5","Hours per week=50")
 ```
 this command will produce the estimated value of Salary when Education = 16, experience =5 and hours per week =50  
 
@@ -21,6 +21,28 @@ Test file. :
 [Test file ](test/linear-regrestion-test.py)
 
 Functions provided in this utility
+
+| function     | solve_regression |
+|--------------|------------|
+| Description  | This function fits the regression model on the given data |
+| template     | solve_and_estimate("<csv data file>","<target column>","x1","x2",...,"x3") |
+| return value | LinearRegressionResponse [lr_functions.py ](lr_functions.py) |
+| Example      | LinearRegression().solve_regression("data/multivariate-date.csv","Salary","Education","Experience","Hours per week") |
+
+| function     | estimate_value |
+|--------------|-------------   |
+| Description  | This function is to estimate the value given the equation parameters  of regression model|
+| template     | estimate_value(<linera_equation_params,x1_value,x2_value,s3_value,...) |
+| return value | decimal value |
+| Example      | LinearRegression().estimate_value(response.equation_params,16,5,50) |
+
+| function     | solve_and_estimate |
+|--------------|-------------   |
+| Description  | This function is to solve the regression and  estimate the value given the equation parameters  of regression model|
+| template     | solve_and_estimate("<csv data file>","<target column>","<x1= value1>","<x2= value2>",...,"<x3= value3>") |
+| return value | None(It prints on console) |
+| Example      | LinearRegression().solve_and_estimate("data/multivariate-date.csv","Salary","Education=16","Experience=5","Hours per week=50")
+ |
 
 | Info | Details |
 |--------------|------------|
