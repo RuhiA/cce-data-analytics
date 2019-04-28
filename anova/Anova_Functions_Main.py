@@ -1,7 +1,8 @@
 import math
 
 class RegressionModel:
-    coeff_arr = None
+    y_cap_arr = None
+    num_estimated_params = None
 
 class AnovaResponse:
     sse = None
@@ -99,26 +100,6 @@ class Anova:
         else:
             return False
     
-    # calculates estimated values of y i.e. ycap_arr 
-    # for any given values of x and regression equation
-    def calculate_y_cap_arr(self, x_arr, coefficient_arr):
-        ycap_arr = []
-        for item in x_arr:
-            ycap = self.calculate_y_cap(item, coefficient_arr)
-            ycap_arr.append(ycap)
-        
-        return ycap_arr
-
-    # calculates estimated value of y i.e. ycap 
-    # for any given value of x and regression equation
-    def calculate_y_cap(self, x, coefficient_arr):
-        degree_of_equation = len(coefficient_arr) - 1
-
-        sum = 0
-        for i in range(len(coefficient_arr)):
-            sum += coefficient_arr[i] * pow(x, degree_of_equation - i)
-        return sum        
-
     def calculate_p_value(self, dfr, dfe, f_value):
         return 1 - self.incompbeta(.5*dfr, .5*dfe, float(dfr)*f_value/(dfr*f_value+dfe))
     
@@ -161,22 +142,16 @@ class Anova:
         
     # computes f statistics given the regression equation and input array
     # this will act as the main method for computing f-statistics
-    def calculate_f_statistic(self, x_arr, y_arr, model, alpha_value):
-        # Validating inputs
-        number_of_regression_coefficient = len(model.coeff_arr) 
-
-        if len(x_arr) != len(y_arr):
-            raise ValueError('Mismatch in the size of x and y input arrays')
-
-        # computing ycap_arr
-        ycap_arr = self.calculate_y_cap_arr(x_arr, model.coeff_arr)
+    def calculate_f_statistic(self, y_arr, y_cap_arr, num_estimated_params, alpha_value):
+        if len(y_arr) != len(y_cap_arr):
+            raise ValueError('Mismatch in the size of y and y_cap input arrays')
 
         # computing f-statistics
-        dfr = number_of_regression_coefficient - 1
+        dfr = num_estimated_params - 1
 
-        return self.compute_anova(y_arr,ycap_arr, dfr, alpha_value)
-    
-    def compare_and_choose_best_model(self, x_arr, y_arr, models_arr, alpha_value):
+        return self.compute_anova(y_arr, y_cap_arr, dfr, alpha_value)
+
+    def compare_and_choose_best_model(self, y_arr, models_arr, alpha_value):
         if len(models_arr) < 2:
             raise ValueError('Need atleast 2 models to compare')
         
@@ -184,7 +159,7 @@ class Anova:
         significant_models_f_values = []
         
         for i in range(len(models_arr)):
-            response = self.calculate_f_statistic(x_arr, y_arr, models_arr[i], alpha_value)
+            response = self.calculate_f_statistic(y_arr, models_arr[i].y_cap_arr, models_arr[i].num_estimated_params ,alpha_value)
             
             if response.isSignificant == True:
                 significant_models_array_indexes.append(i)
