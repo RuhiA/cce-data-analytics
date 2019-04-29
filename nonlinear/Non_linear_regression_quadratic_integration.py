@@ -5,6 +5,15 @@ from Non_linear_regression_quadratic import fit_non_regression_quadratic_equatio
 from Non_linear_regression_quadratic import get_non_linear_quadratic_estimated_values_of_y
 from Non_linear_regression_quadratic import get_non_linear_quadratic_estimated_value_of_y
 
+import sys
+package_dir = os.path.dirname(os.path.abspath(__file__))
+import_path, file = os.path.split(package_dir)
+import_file = os.path.join(import_path,'anova')
+sys.path.append(import_file)
+from Anova_Functions_Main import RegressionModel
+
+a = RegressionModel()
+
 def csv_reader_for_bivariate(input_file):
 	first_column = []
 	second_column = []
