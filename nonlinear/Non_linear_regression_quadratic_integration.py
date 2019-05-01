@@ -10,9 +10,7 @@ package_dir = os.path.dirname(os.path.abspath(__file__))
 import_path, file = os.path.split(package_dir)
 import_file = os.path.join(import_path,'anova')
 sys.path.append(import_file)
-from Anova_Functions_Main import RegressionModel
-
-a = RegressionModel()
+from Anova_Functions_Main import Anova
 
 def csv_reader_for_bivariate(input_file):
 	first_column = []
@@ -39,6 +37,16 @@ def fit_non_regression_quadratic_integration_equation(input_file, find_Y_hat_at_
 	plt.plot(X, Y_hat)
 	plt.show()
 	print(get_non_linear_quadratic_estimated_value_of_y(solved_parameters, find_Y_hat_at_X))
+	degreesOfFreedom = 1
+	alpha_value = 0.05
+	anovaResult = Anova().compute_anova(Y,Y_hat, degreesOfFreedom, alpha_value)
+	print("Anova results")
+	print(anovaResult.sse)
+	print(anovaResult.ssr)
+	print(anovaResult.mse)
+	print(anovaResult.msr)
+	print(anovaResult.f)
+	print(anovaResult.p)
 
 def fit_non_regression_quadratic_integration_equation_test():
 	package_dir = os.path.dirname(os.path.abspath(__file__))
