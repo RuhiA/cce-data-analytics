@@ -145,17 +145,19 @@ class MyGUI():
         self.cal_progress_meter("generating linear model")
 
         ## Added By Ruhi 
-        file_path = "test/data/multivariate_4-date.csv"
+        file_path = "test/data/multivariate_4-date.csv" # TODO : Provide the path of the file
         dataSet = pd.read_csv(file_path)
         y_column = dataSet.columns[0]
         x_columns = list(dataSet.columns[1:])
         response = LinearRegression().solve_regression(file_path,y_column,*x_columns)
-        estimated_output = LinearRegression().estimate_value(response.equation_params,16,5,50,50,50)
-       # if values[3]==[]:
+        estimated_output = LinearRegression().estimate_value(response.equation_params,16,5,50,50,50) # TODO : pass the x values for which the y has to be estimated
+        for corr_value in response.r_values:
+            print (corr_value.logMessage) # TODO : show these correlation coefficient messages on UI
+        print(response.equtation_str) ## TODO : Show this equation on UI
+        # if values[3]==[]:
        #     sg.Popup("Select the args (y-> x1 or x2 or x3)")
        #     return
        # self.scatter_plot(values,linearDataList=[2.5,3.1,4.6,5.3,6.2,7.8,8.3,9.1,10.2,9.4])
-
         params = response.equation_params
         dfR = response.anova.dfr
         dfE = response.anova.dfe
