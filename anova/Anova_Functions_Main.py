@@ -5,6 +5,8 @@ class RegressionModel:
     num_estimated_params = None
 
 class AnovaResponse:
+    dfe = None
+    dfr = None
     sse = None
     ssr = None
     mse = None
@@ -57,6 +59,8 @@ class Anova:
         response.msr = msr
         response.f = fvalue
         response.p = p_value
+        response.dfe = dfe
+        response.dfr = dfr
         
         response.isSignificant = self.is_result_significant(p_value, alpha_value)
             

@@ -5,9 +5,13 @@ import matplotlib
 matplotlib.use("TKAgg")
 from matplotlib import pyplot as plt
 from tabulate import tabulate
+from lr_utils import *
 Title = "sri venkateshwara Book Store"
+
+PROGRESS_METER_DELAY = 5
 class MyGUI():
 
+  
     def SINGLE_LAYOUT(self,cleansed_data_path=None,smoothened_data_path=None):
 
         layout=[[sg.Text('Cleansed data CSV file')],
@@ -64,7 +68,7 @@ class MyGUI():
         :param raw_csv_path:
         :return:cleansed_file_csv_path
         """
-        cleansed_file_path="c:\cleansedData.csv"
+        cleansed_file_path= raw_csv_path #"c:\cleansedData.csv"
         sg.Popup("****cleansed data in the path :%s *******"%cleansed_file_path)
         return cleansed_file_path
     def CALL_SMOOTHENING_FUNC(self,raw_csv_path):
@@ -139,25 +143,33 @@ class MyGUI():
 
 
         self.cal_progress_meter("generating linear model")
-        if values[3]==[]:
-            sg.Popup("Select the args (y-> x1 or x2 or x3)")
-            return
-        self.scatter_plot(values,linearDataList=[2.5,3.1,4.6,5.3,6.2,7.8,8.3,9.1,10.2,9.4])
 
-        dfR = 1
-        dfE = 8
-        dfT = 9
-        SSR = 425089
-        SSE = 17089
-        SST = 44879.15
-        MSR = 425089
-        MSE = 42507
-        MST = 4230987
-        F = 199.3
-        P = 0.003
+        ## Added By Ruhi 
+        file_path = "test/data/multivariate_4-date.csv"
+        dataSet = pd.read_csv(file_path)
+        y_column = dataSet.columns[0]
+        x_columns = list(dataSet.columns[1:])
+        response = LinearRegression().solve_regression(file_path,y_column,*x_columns)
+        estimated_output = LinearRegression().estimate_value(response.equation_params,16,5,50,50,50)
+       # if values[3]==[]:
+       #     sg.Popup("Select the args (y-> x1 or x2 or x3)")
+       #     return
+       # self.scatter_plot(values,linearDataList=[2.5,3.1,4.6,5.3,6.2,7.8,8.3,9.1,10.2,9.4])
+
+        params = response.equation_params
+        dfR = response.anova.dfr
+        dfE = response.anova.dfe
+        dfT = dfR+dfE
+        SSR = response.anova.ssr
+        SSE = response.anova.sse
+        SST = response.anova.ssr + response.anova.sse
+        MSR = response.anova.msr
+        MSE = response.anova.mse
+        F = response.anova.f
+        P = response.anova.p
         list_of_result = [["Regression", dfR, (float(SSR)), (float(MSR)),"-","-"]\
                           ,["Error", dfE, float(SSE), float(MSE),float(F),float(P)]\
-                          ,["Total",dfT,float(SST),float(MST),"-","-"]\
+                          ,["Total",dfT,float(SST),"-","-","-"]\
                           ]
 
         headers = ["source","df","SS","MS","F","P"]
@@ -248,8 +260,8 @@ class MyGUI():
 
 
         # Display a progress meter. Allow user to break out of loop using cancel button
-        for i in range(2000):
-            if not sg.OneLineProgressMeter(progress_meter_bar, i + 1, 2000, '.....'):
+        for i in range(PROGRESS_METER_DELAY):
+            if not sg.OneLineProgressMeter(progress_meter_bar, i + 1, PROGRESS_METER_DELAY, '.....'):
                 break
 
 
