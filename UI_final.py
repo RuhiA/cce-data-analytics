@@ -36,8 +36,12 @@ class MyGUI():
                 [sg.InputText('enter arg1')],  # 3
                 [sg.Text('x')],
                 [sg.Button("CALCUALATE_Y for parabolic function")],
-                [sg.Button("CALCUALATE_Y for exponential function")]
-
+                [sg.Button("CALCUALATE_Y for exponential function")],
+                [sg.Button("ACF")],
+                [sg.Button("PACF")],
+                [sg.Button("t-series")],
+                [sg.Button("ARIMA_MODELLING")],
+                [sg.Button("SYNTHETIC DATA GENERATION")]
 
 
                 ]
@@ -56,12 +60,56 @@ class MyGUI():
             self.funtionToFindY_exponential(self.values)
         elif self.button == "GENERATE NON-LINEAR MODEL RETURN ANOVA TABLE":
             self.generateNonLinearModel(cleansed_data_path, smoothened_data_path)
+        elif self.button == "ACF":
+            self.ACF_call_function()
+        elif self.button == "PACF":
+            self.PACF_call_function()
+        elif self.button == "t-series":
+            self.t_series_call_function()
+        elif self.button == "ARIMA_MODELLING":
+            self.arima_modelling_call_function()
+        elif self.button == "SYNTHETIC DATA GENERATION":
+            self.Synthetic_Data_Generation_call_func()
+
 
 
         print("%s"%self.button)
         print(self.values)
         #sg.Popup(button, values)
         return self.values
+    def Synthetic_Data_Generation_call_func(self):
+        """
+
+        :return:
+        """
+        print("please integrate synthectic data genereation function")
+    def arima_modelling_call_function(self):
+        """
+
+        :return:
+        """
+        print("please integrate arima modelling function")
+
+    def t_series_call_function(self):
+        """
+
+        :return:
+        """
+        print("please integrate t-series function")
+
+    def ACF_call_function(self):
+        """
+
+        :return:
+        """
+        print("please integrate ACF function")
+
+    def PACF_call_function(self):
+        """
+
+        :return:
+        """
+        print("please integrate PACF function")
 
     def CALL_CLEANSING_FUNC(self,raw_csv_path):
         """
@@ -83,142 +131,87 @@ class MyGUI():
         """
         :return:
         """
-        file_path = "test/data/multivariate_4-date.csv"  # TODO : Provide the path of the file
+        file_path=values[2]
+        #file_path = "C:/Users/sbabu/Desktop/cce-data-analytics-master/CCE_DATA_ANALYTICS_MASTERRRR/test/data/multivariate_4-date.csv"  # TODO : Provide the path of the file
         dataSet = pd.read_csv(file_path)
         y_column = dataSet.columns[0]
-        num_of_params = None
-        value_columns = []
         y = 0
         if values[4] == []:
             sg.Popup("please select the number of args")
             return
 
         elif values[4][0] == 'args 1':
-            num_of_params = 1
             # y=mx1+c
             if (values[5].count("enter arg") == 1):
                 sg.Popup("please enter the value , retry...")
                 return
 
-            value_columns.append(int(values[5]))
+            x1 = float(values[5])
+
+            x_columns = list(dataSet.columns[1:2])
+            response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
+            y = LinearRegression().estimate_value(response.equation_params, x1)
+
 
         elif values[4][0] == "args 2":
-            num_of_params = 2
+
             # y=m1x1+m2x2+c
             if ((values[4].count("enter arg") == 1) or (values[5].count("enter arg") == 1)):
                 sg.Popup("please enter the value , retry...")
                 return
 
-            value_columns.append(int(values[5]))
-            value_columns.append(int(values[6]))
+            x1 = float(values[5])
+            x2 = float(values[6])
+
+            # y=222
+            x_columns = list(dataSet.columns[1:3])
+            response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
+
+            y = LinearRegression().estimate_value(response.equation_params, x1, x2)
 
         elif values[4][0] == "args 3":
-            num_of_params = 3
+
             # y=m1x1+m2x2+m3x3
 
             if (values[5].count("enter arg") == 1) or (values[6].count("enter arg") == 1) or (values[7].count("enter arg") == 1):
                 sg.Popup("please enter the value , retry...")
                 return
-            value_columns.append(int(values[5]))
-            value_columns.append(int(values[6]))
-            value_columns.append(int(values[7]))
 
-        x_columns = list(dataSet.columns[1:(num_of_params+1)])
-        response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
-        print(response)
-        y = LinearRegression().estimate_value(response.equation_params, *value_columns)
-        print(y)
-       #  print("determine y")
-       #  print(values)
-       #  file_path = "test/data/multivariate_4-date.csv"  # TODO : Provide the path of the file
-       #  dataSet = pd.read_csv(file_path)
-       #  y_column = dataSet.columns[0]
-       # # x_columns = list(dataSet.columns[1:])
-       #  #response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
-       # # print(response.equation_params)
-       #  y=0
-       #  if values[4] == []:
-       #      sg.Popup("please select the number of args")
-       #      return
-       #
-       #  elif values[4][0] == 'args 1':
-       #      #y=mx1+c
-       #      if (values[5].count("enter arg") == 1) :
-       #          sg.Popup("please enter the value , retry...")
-       #          return
-       #
-       #      x1 = values[5]
-       #      x_columns = list(dataSet.columns[1:2])
-       #      response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
-       #      y = LinearRegression().estimate_value(response.equation_params, x1)
-       #
-       #      #y=111#for now hardcoded
-       #
-       #  elif values[4][0] == "args 2":
-       #
-       #      #y=m1x1+m2x2+c
-       #      if  ((values[4].count("enter arg") == 1) or (values[5].count("enter arg") == 1)):
-       #          sg.Popup("please enter the value , retry...")
-       #          return
-       #
-       #      x1 = values[5]
-       #      x2 = values[6]
-       #
-       #      #y=222
-       #      x_columns = list(dataSet.columns[1:3])
-       #      response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
-       #      y = LinearRegression().estimate_value(response.equation_params, x1, x2)
-       #  elif values[4][0] == "args 3":
-       #
-       #      #y=m1x1+m2x2+m3x3
-       #
-       #      if (values[5].count("enter arg") == 1) or (values[6].count("enter arg") == 1) or (values[7].count("enter arg") == 1):
-       #          sg.Popup("please enter the value , retry...")
-       #          return
-       #
-       #      x1 = values[5]
-       #      x2 = values[6]
-       #      x3 = values[7]
-       #      #y=333.33
-       #      x_columns = list(dataSet.columns[1:3])
-       #      response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
-       #      y = LinearRegression().estimate_value(response.equation_params, x1, x2, x3)
-       #  sg.Popup("Y VALUE DETERMINED is :%s"%str(y))
+            x1 = float(values[5])
+            x2 = float(values[6])
+            x3 = float(values[7])
+            # y=333.33
+            x_columns = list(dataSet.columns[1:4])
+            response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
+            print(response)
+            y = LinearRegression().estimate_value(response.equation_params, x1, x2, x3)
+        list_of_messages=[]
+        for corr_value in response.r_values:
+            list_of_messages.append(corr_value.logMessage)
+        sg.Popup("below are the correlation coefficients",*list_of_messages,"Final equation",\
+                 response.equtation_str,"Y value determined for given x values ",str(y))
+
+
 
 
     def generateLinearModel(self,values):
         """
         :return:
         """
-        #Note:we are not giving the option to choose to generate a linear regression model for
-        # cleansed & smoothened file
-        #if user clicks on the smoothened data , we are passing the smoothened data
-        #else
-        # we are passing the jus cleansed file
 
-        # if smoothened_data_path==None:
-        #     print("call the function to generate linear model with the cleansed file")
-        # else:
-        #     print("call the function to generate linear model with the smoothened data")
         CSV_FILE_PATH=values[2]
 
 
         self.cal_progress_meter("generating linear model")
 
         ## Added By Ruhi 
-        file_path = "test/data/multivariate_4-date.csv" # TODO : Provide the path of the file
+        #file_path = "test/data/multivariate_4-date.csv" # TODO : Provide the path of the file
+        file_path=values[2]
         dataSet = pd.read_csv(file_path)
         y_column = dataSet.columns[0]
         x_columns = list(dataSet.columns[1:])
         response = LinearRegression().solve_regression(file_path,y_column,*x_columns)
-        #estimated_output = LinearRegression().estimate_value(response.equation_params,16,5,50,50,50) # TODO : pass the x values for which the y has to be estimated
-        for corr_value in response.r_values:
-            print (corr_value.logMessage) # TODO : show these correlation coefficient messages on UI
-        print(response.equtation_str) ## TODO : Show this equation on UI
-        # if values[3]==[]:
-       #     sg.Popup("Select the args (y-> x1 or x2 or x3)")
-       #     return
-       # self.scatter_plot(values,linearDataList=[2.5,3.1,4.6,5.3,6.2,7.8,8.3,9.1,10.2,9.4])
+
         params = response.equation_params
         dfR = response.anova.dfr
         dfE = response.anova.dfe
