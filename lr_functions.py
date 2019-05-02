@@ -28,6 +28,7 @@ def sum_of_columns( dataSet, columnName) :
 	return sum(dataSet[columnName])
 
 def mean_of_column( dataSet, columnName) :
+	print(columnName)
 	return round_float(sum(dataSet[columnName])/len(dataSet))
 
 def sum_of_x_minus_x_bar( dataSet, columnName) :
@@ -43,6 +44,12 @@ def sum_of_muliplication_of_cols( dataSet, columnName1, columnName2) :
 
 def standard_deviation(dataSet, columnName) :
 	return round_float(math.sqrt(sum((dataSet[columnName]- mean_of_column(dataSet, columnName))**2)/(len(dataSet)-1)))
+
+def variance(dataSet, featureColumn) :
+	x_min_xbar = dataSet[featureColumn]- mean_of_column(dataSet, featureColumn)
+	v_numerator = x_min_xbar * x_min_xbar
+	variance_val = sum(v_numerator)/(len(dataSet)-1)
+	return round_float(variance_val)
 
 
 def covariance(dataSet, featureColumn, actualValueColumn) :
@@ -68,9 +75,17 @@ def find_corr_coeff(dataSet, featureColumn, actualValueColumn) :
 
 def check_correlation_coeff(data , valueColumn, *featureColumns ) :
 	corr_coeff_arr = []
+	# find correlation coefficient
 	for feature in featureColumns:
-			corr_value = find_corr_coeff(data, feature, valueColumn)
-			corr_coeff_arr.append(corr_value)
+		corr_value = find_corr_coeff(data, feature, valueColumn)
+		corr_coeff_arr.append(corr_value)
+
+	# find multicollinearity
+	for feature1 in featureColumns:
+		for feature2 in featureColumns:
+			if(feature1 != feature2) :
+				corr_value = find_corr_coeff(data, feature1, feature2)
+				corr_coeff_arr.append(corr_value)
 	return corr_coeff_arr		
 
 def find_parameters_for_multivariate(dataset, actualValueColumn, *featureColumn ) :
