@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import re
 
-df2=pd.read_csv("C:/Users/LENOVO1/Downloads/Dataset - Bivariant- Sweden Insurance claim.csv") ####path of the data
+df2=pd.read_csv("C:/Users/LENOVO1/Downloads/Dataset - Bivariant- Sweden Insurance claim.csv") ####path of the data  ###here we need to call the ui.input function 
 new_df = pd.DataFrame()
 out_df = pd.DataFrame()
 smooth_df = pd.DataFrame()
