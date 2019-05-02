@@ -83,36 +83,46 @@ class MyGUI():
         """
         :return:
         """
-        print("determine y")
-        print(values)
-        y=0
+        file_path = "C:/Users/sbabu/Desktop/cce-data-analytics-master/CCE_DATA_ANALYTICS_MASTERRRR/test/data/multivariate_4-date.csv"  # TODO : Provide the path of the file
+        dataSet = pd.read_csv(file_path)
+        y_column = dataSet.columns[0]
+        y = 0
         if values[4] == []:
             sg.Popup("please select the number of args")
             return
 
         elif values[4][0] == 'args 1':
-            #y=mx1+c
-            if (values[5].count("enter arg") == 1) :
+            # y=mx1+c
+            if (values[5].count("enter arg") == 1):
                 sg.Popup("please enter the value , retry...")
                 return
 
             x1 = values[5]
-            y=111#for now hardcoded
+
+            x_columns = list(dataSet.columns[1:2])
+            response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
+            y = LinearRegression().estimate_value(response.equation_params, x1)
+        # y=111#for now hardcoded
 
         elif values[4][0] == "args 2":
 
-            #y=m1x1+m2x2+c
-            if  ((values[4].count("enter arg") == 1) or (values[5].count("enter arg") == 1)):
+            # y=m1x1+m2x2+c
+            if ((values[4].count("enter arg") == 1) or (values[5].count("enter arg") == 1)):
                 sg.Popup("please enter the value , retry...")
                 return
 
             x1 = values[5]
             x2 = values[6]
 
-            y=222
+            # y=222
+            x_columns = list(dataSet.columns[1:3])
+            response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
+
+            y = LinearRegression().estimate_value(response.equation_params, x1, x2)
+
         elif values[4][0] == "args 3":
 
-            #y=m1x1+m2x2+m3x3
+            # y=m1x1+m2x2+m3x3
 
             if (values[5].count("enter arg") == 1) or (values[6].count("enter arg") == 1) or (values[7].count("enter arg") == 1):
                 sg.Popup("please enter the value , retry...")
@@ -121,8 +131,67 @@ class MyGUI():
             x1 = values[5]
             x2 = values[6]
             x3 = values[7]
-            y=333.33
-        sg.Popup("Y VALUE DETERMINED is :%s"%str(y))
+            # y=333.33
+            x_columns = list(dataSet.columns[1:4])
+            response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
+            print(response)
+            y = LinearRegression().estimate_value(response.equation_params, x1, x2, x3)
+       #  print("determine y")
+       #  print(values)
+       #  file_path = "test/data/multivariate_4-date.csv"  # TODO : Provide the path of the file
+       #  dataSet = pd.read_csv(file_path)
+       #  y_column = dataSet.columns[0]
+       # # x_columns = list(dataSet.columns[1:])
+       #  #response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
+       # # print(response.equation_params)
+       #  y=0
+       #  if values[4] == []:
+       #      sg.Popup("please select the number of args")
+       #      return
+       #
+       #  elif values[4][0] == 'args 1':
+       #      #y=mx1+c
+       #      if (values[5].count("enter arg") == 1) :
+       #          sg.Popup("please enter the value , retry...")
+       #          return
+       #
+       #      x1 = values[5]
+       #      x_columns = list(dataSet.columns[1:2])
+       #      response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
+       #      y = LinearRegression().estimate_value(response.equation_params, x1)
+       #
+       #      #y=111#for now hardcoded
+       #
+       #  elif values[4][0] == "args 2":
+       #
+       #      #y=m1x1+m2x2+c
+       #      if  ((values[4].count("enter arg") == 1) or (values[5].count("enter arg") == 1)):
+       #          sg.Popup("please enter the value , retry...")
+       #          return
+       #
+       #      x1 = values[5]
+       #      x2 = values[6]
+       #
+       #      #y=222
+       #      x_columns = list(dataSet.columns[1:3])
+       #      response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
+       #      y = LinearRegression().estimate_value(response.equation_params, x1, x2)
+       #  elif values[4][0] == "args 3":
+       #
+       #      #y=m1x1+m2x2+m3x3
+       #
+       #      if (values[5].count("enter arg") == 1) or (values[6].count("enter arg") == 1) or (values[7].count("enter arg") == 1):
+       #          sg.Popup("please enter the value , retry...")
+       #          return
+       #
+       #      x1 = values[5]
+       #      x2 = values[6]
+       #      x3 = values[7]
+       #      #y=333.33
+       #      x_columns = list(dataSet.columns[1:3])
+       #      response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
+       #      y = LinearRegression().estimate_value(response.equation_params, x1, x2, x3)
+       #  sg.Popup("Y VALUE DETERMINED is :%s"%str(y))
 
 
     def generateLinearModel(self,values):
@@ -150,7 +219,7 @@ class MyGUI():
         y_column = dataSet.columns[0]
         x_columns = list(dataSet.columns[1:])
         response = LinearRegression().solve_regression(file_path,y_column,*x_columns)
-        estimated_output = LinearRegression().estimate_value(response.equation_params,16,5,50,50,50) # TODO : pass the x values for which the y has to be estimated
+        #estimated_output = LinearRegression().estimate_value(response.equation_params,16,5,50,50,50) # TODO : pass the x values for which the y has to be estimated
         for corr_value in response.r_values:
             print (corr_value.logMessage) # TODO : show these correlation coefficient messages on UI
         print(response.equtation_str) ## TODO : Show this equation on UI
@@ -236,28 +305,7 @@ class MyGUI():
         #ax.scatter(y,x)
 
 
-    '''
-    def scatter_plot(self,XLabel,YLabel,plotLabel,XValues,YValues):
-        """
-        :return:
-        """
-        plt.title("y->x1")
-        plt.xlabel(XLabel, fontsize=16)
-        plt.ylabel(YLabel, fontsize=16)
-        plt.suptitle(plotLabel, fontsize=20)
-        plt.scatter(XValues , YValues)
-        linear_data=[float(1.5),float(2.3),4]
-        plt.plot(XValues , linear_data)
-       # plt.plot(XValues, YValues)
-       # sg.Popup("The Plot displayed")
 
-        plt.show(block=False)
-        #plt .close()
-        print("debug line")
-        self.window.Close()
-        return
-
-'''
     def cal_progress_meter(self,progress_meter_bar="processing"):
 
 
