@@ -83,59 +83,51 @@ class MyGUI():
         """
         :return:
         """
-        file_path = "C:/Users/sbabu/Desktop/cce-data-analytics-master/CCE_DATA_ANALYTICS_MASTERRRR/test/data/multivariate_4-date.csv"  # TODO : Provide the path of the file
+        file_path = "test/data/multivariate_4-date.csv"  # TODO : Provide the path of the file
         dataSet = pd.read_csv(file_path)
         y_column = dataSet.columns[0]
+        num_of_params = None
+        value_columns = []
         y = 0
         if values[4] == []:
             sg.Popup("please select the number of args")
             return
 
         elif values[4][0] == 'args 1':
+            num_of_params = 1
             # y=mx1+c
             if (values[5].count("enter arg") == 1):
                 sg.Popup("please enter the value , retry...")
                 return
 
-            x1 = values[5]
-
-            x_columns = list(dataSet.columns[1:2])
-            response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
-            y = LinearRegression().estimate_value(response.equation_params, x1)
-        # y=111#for now hardcoded
+            value_columns.append(int(values[5]))
 
         elif values[4][0] == "args 2":
-
+            num_of_params = 2
             # y=m1x1+m2x2+c
             if ((values[4].count("enter arg") == 1) or (values[5].count("enter arg") == 1)):
                 sg.Popup("please enter the value , retry...")
                 return
 
-            x1 = values[5]
-            x2 = values[6]
-
-            # y=222
-            x_columns = list(dataSet.columns[1:3])
-            response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
-
-            y = LinearRegression().estimate_value(response.equation_params, x1, x2)
+            value_columns.append(int(values[5]))
+            value_columns.append(int(values[6]))
 
         elif values[4][0] == "args 3":
-
+            num_of_params = 3
             # y=m1x1+m2x2+m3x3
 
             if (values[5].count("enter arg") == 1) or (values[6].count("enter arg") == 1) or (values[7].count("enter arg") == 1):
                 sg.Popup("please enter the value , retry...")
                 return
+            value_columns.append(int(values[5]))
+            value_columns.append(int(values[6]))
+            value_columns.append(int(values[7]))
 
-            x1 = values[5]
-            x2 = values[6]
-            x3 = values[7]
-            # y=333.33
-            x_columns = list(dataSet.columns[1:4])
-            response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
-            print(response)
-            y = LinearRegression().estimate_value(response.equation_params, x1, x2, x3)
+        x_columns = list(dataSet.columns[1:(num_of_params+1)])
+        response = LinearRegression().solve_regression(file_path, y_column, *x_columns)
+        print(response)
+        y = LinearRegression().estimate_value(response.equation_params, *value_columns)
+        print(y)
        #  print("determine y")
        #  print(values)
        #  file_path = "test/data/multivariate_4-date.csv"  # TODO : Provide the path of the file
