@@ -1,3 +1,30 @@
+"""
+functions to refer for integration or binding the function calls:
+1 Data_input :
+    Directly calling from "Data_input_functions"  :
+    data_input() , Smoothing_file_path() , cleaned_file_path()
+2 scatter plot :
+     scatter_plot()
+3 generate Linear model & anova table:
+    generateLinearModel()
+4 caluculate y for linear model:
+        funtionToFindY()
+5 NON Linear model :
+        generateNonLinearModel()
+6 ACF:
+   ACF_call_funtion()
+7 PACF:
+    PACF_call_function()
+8 t-series
+    t_series_call_function()
+9 ARIMA_MODELLING
+    arima_modelling_call_function()
+
+10 SYNTHETIC DATA GENERATION
+        synthetic_data_generation_call_func()
+
+"""
+
 import PySimpleGUI as sg
 import sys
 import pandas as pd
@@ -17,10 +44,12 @@ class MyGUI():
     def SINGLE_LAYOUT(self,cleansed_data_path=None,smoothened_data_path=None,list_of_input_parmeters=None):
 
         layout=[[sg.Text('Cleansed data CSV file')],
-                [sg.InputText('%s'%cleansed_data_path)],  #1
+                [sg.InputText('%s'%cleansed_data_path,size=(90,3))],  #1
                 [sg.Text('Smoothened data CSV file')],
-                [sg.InputText('%s'%smoothened_data_path)],  #2
+                [sg.InputText('%s'%smoothened_data_path,size=(90,3))],  #2
+                [sg.Text('choose the csv file in drop-down')],
                 [sg.InputCombo(('cleansed_csv', 'smoothened_csv'), size=(20, 3))],
+                [sg.Text('choose the arguements')],
                 [sg.Listbox(values=list_of_input_parmeters, size=(55, 3))],
                 [sg.Button("SCATTER_PLOT")],
                 [sg.Text('Linear Regression')],
@@ -39,8 +68,8 @@ class MyGUI():
                 [sg.Text('x')],
                 [sg.Button("CALCUALATE_Y for parabolic function")],
                 [sg.Button("CALCUALATE_Y for exponential function")],
-                [sg.Button("ACF",pad=(35,2)),sg.Button("PACF",pad=(35,3)),sg.Button("t-series",pad=(35,4))],
-                [sg.Button("ARIMA_MODELLING",pad=(5,2)),sg.Button("SYNTHETIC DATA GENERATION",pad=(5,3))]
+                [sg.Button("ACF",pad=(35,2)),sg.Button("PACF",pad=(35,3)),sg.Button("t-series",pad=(35,4)),
+                sg.Button("ARIMA_MODELLING",pad=(5,2)),sg.Button("SYNTHETIC DATA GENERATION",pad=(5,3))]
 
                 ]
         self.window = sg.Window(Title, default_element_size=(40, 1)).Layout(layout)
@@ -77,52 +106,35 @@ class MyGUI():
 
         :return:
         """
-        print("please integrate synthectic data genereation function")
+        sg.Popup("please integrate synthectic data genereation function")
     def arima_modelling_call_function(self):
         """
 
         :return:
         """
-        print("please integrate arima modelling function")
+        sg.Popup("please integrate arima modelling function")
 
     def t_series_call_function(self):
         """
 
         :return:
         """
-        print("please integrate t-series function")
+        sg.Popup("please integrate t-series function")
 
     def ACF_call_function(self):
         """
 
         :return:
         """
-        print("please integrate ACF function")
+        sg.Popup("please integrate ACF function")
 
     def PACF_call_function(self):
         """
 
         :return:
         """
-        print("please integrate PACF function")
+        sg.Popup("please integrate PACF function")
 
-#    def CALL_CLEANSING_FUNC(self,raw_csv_path):
-#        """
-#        :param raw_csv_path:
-#        :return:cleansed_file_csv_path
-#        """
-#        cleansed_file_path= raw_csv_path #"c:\cleansedData.csv"
-#        sg.Popup("****cleansed data in the path :%s *******"%cleansed_file_path)
-#        return cleansed_file_path
-#
-#    def CALL_SMOOTHENING_FUNC(self,raw_csv_path):
-#        """
-#        :param raw_csv_path:
-#        :return:smoothened_file_csv_path
-#        """
-#        self.smoothened_file_path="c:\smoothened_data.csv"
-#        sg.Popup("****smoothened data in the path :%s *******"%smoothened_file_path)
-#        return smoothened_file_path
 
     def funtionToFindY(self,values):
         """
@@ -137,7 +149,7 @@ class MyGUI():
             if smoothened_file_path == None:
                 sg.Popup("smootehning is not done , please select cleansed csv option")
                 return
-        #file_path = "C:/Users/sbabu/Desktop/cce-data-analytics-master/CCE_DATA_ANALYTICS_MASTERRRR/test/data/multivariate_4-date.csv"  # TODO : Provide the path of the file
+       
         dataSet = pd.read_csv(file_path)
         y_column = dataSet.columns[0]
         y = 0
@@ -223,8 +235,8 @@ class MyGUI():
         self.cal_progress_meter("generating linear model")
 
         ## Added By Ruhi 
-        #file_path = "test/data/multivariate_4-date.csv" # TODO : Provide the path of the file
-        #file_path=values[2]
+       
+       
         dataSet = pd.read_csv(file_path)
         y_column = dataSet.columns[0]
         x_columns = list(dataSet.columns[1:])
@@ -296,7 +308,7 @@ class MyGUI():
 
         sg.Popup("chosen csv file:%s"%CSV_to_plot_data)
         if values[3] == []:
-            sg.Popup("Select the args (y-> x1 or x2 or x3)")
+            sg.Popup("Select the args %s"%list_of_input_parmeters)
             return
         get_y_and_x_flag=values[3][0]
         y=[]
@@ -308,7 +320,7 @@ class MyGUI():
             sg.Popup("y and x axis data is not aligned , please check with data input team")
             return
         print("send the csv plot and get the values")
-        fig = plt.figure(get_y_and_x_flag)
+        fig = plt.figure(get_y_and_x_flag+"_"+CSV_to_plot_data)
         ax = fig.add_subplot(1,1,1)
         ax.set_title(get_y_and_x_flag)
         ax.set_ylabel(get_y_and_x_flag.split("->")[0])
@@ -337,7 +349,7 @@ class MyGUI():
 
         layout=[[sg.Text('Choose A file', size=(35, 1))],
         [sg.Text('Your file', size=(15, 1), auto_size_text=False, justification='right'),
-         sg.InputText('Default File path'), sg.FileBrowse()],
+         sg.InputText('please browse through ->'), sg.FileBrowse()],
          [sg.Submit(), sg.Cancel()]
         ]
 
@@ -348,19 +360,6 @@ class MyGUI():
 
         #sg.Popup("raw csv file path", values)
         return values
-
-    def SMOOTHEN_DATA(self):
-
-        layout=[[sg.Text('smoothen data', size=(35, 1))],
-        [sg.Text('Your file', size=(15, 1), auto_size_text=False, justification='right'),
-         sg.InputText('Default File path'), sg.FileBrowse()],
-         [sg.Ok(), sg.Cancel()]
-        ]
-
-        self.smoothenedWindow = sg.Window(Title, default_element_size=(40, 1)).Layout(layout)
-        button, values = self.smoothenedWindow.Read()
-        #sg.Popup(button, values)
-
     def funtionToFindY_parabloic(self,values):
         """
         :return:
@@ -370,7 +369,7 @@ class MyGUI():
         y=0
         #y=m1*x*x+m2*x+c
         y=1528.1528
-        sg.Popup("Y VALUE DETERMINED is :%s"%str(y))
+        sg.Popup("DUMMY value IGNORE Y VALUE DETERMINED is :%s"%str(y))
 
     def funtionToFindY_exponential(self, values):
         print("determine y")
@@ -378,17 +377,11 @@ class MyGUI():
         y = 0
         # y=m1*x*x+m2*x+c
         y = 2610.2610
-        sg.Popup("Y VALUE DETERMINED is :%s" % str(y))
+        sg.Popup("DUMMY VALUE IGNORE Y VALUE DETERMINED is :%s" % str(y))
     def generateNonLinearModel(self,cleansed_data_path,smoothened_data_path):
         """
         :return:
         """
-        #Note:we are not giving the option to choose to generate a linear regression model for
-        # cleansed & smoothened file
-        #if user clicks on the smoothened data , we are passing the smoothened data
-        #else
-        # we are passing the jus cleansed file
-
         if smoothened_data_path==None:
             print("call the function to generate linear model with the cleansed file")
         else:
@@ -415,7 +408,7 @@ class MyGUI():
         print("%s"%End_table)
         sg.Table(End_table)
 
-        sg.Popup(Title,End_table)
+        sg.Popup("please integrate")
 
 
 
@@ -456,12 +449,12 @@ if __name__ == "__main__":
         smoothened_file_path = obj_data_input.Smoothing_file_path(raw_csv_path)
         obj_GUI.InputWindow.Close()
 
-    #mian window for computation
+    #main window for computation
     obj_GUI.SINGLE_LAYOUT(cleansed_file_path,smoothened_file_path,list_of_input_parmeters)
-    values = sg.Popup("Do you want to do more Computation or continue", button_type=sg.POPUP_BUTTONS_YES_NO)
+    values = sg.Popup("Do you want to retry (or) do more Computation (or) continue", button_type=sg.POPUP_BUTTONS_YES_NO)
     while values == 'Yes':
         obj_GUI.window.Close()
         obj_GUI.SINGLE_LAYOUT(cleansed_file_path,smoothened_file_path,list_of_input_parmeters)
-        values = sg.Popup("Do you want to do more Computation or continue", button_type=sg.POPUP_BUTTONS_YES_NO)
+        values = sg.Popup("Do you want to retry (or) do more Computation (or) continue", button_type=sg.POPUP_BUTTONS_YES_NO)
 
     print("END")
