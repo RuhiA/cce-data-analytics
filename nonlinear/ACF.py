@@ -46,7 +46,13 @@ def get_correlogram_test():
 	X_axis_lag = []
 	for i in range(1, number_of_lags + 1):
 		X_axis_lag.append(i)
-	plt.step(X_axis_lag, Y_axis_ACF)
+	print(Y_axis_ACF)	
+	points = []
+	for lag in range(1, number_of_lags + 1):
+		points.append((X_axis_lag[lag-1], Y_axis_ACF[lag-1]))
+	plt.xlim(0, number_of_lags)
+	for pt in points:
+		plt.plot( [pt[0],pt[0]], [0,pt[1]])
 	plt.show()
 
 # get_correlogram_test()
