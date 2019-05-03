@@ -7,6 +7,7 @@ from matplotlib import pyplot as plt
 from tabulate import tabulate
 import pandas as pd
 from lr_utils import *
+from Data_input_functions import *
 Title = "sri venkateshwara Book Store"
 
 PROGRESS_METER_DELAY = 60
@@ -105,31 +106,31 @@ class MyGUI():
         """
         print("please integrate PACF function")
 
-    def CALL_CLEANSING_FUNC(self,raw_csv_path):
-        """
-        :param raw_csv_path:
-        :return:cleansed_file_csv_path
-        """
-        cleansed_file_path= raw_csv_path #"c:\cleansedData.csv"
-        sg.Popup("****cleansed data in the path :%s *******"%cleansed_file_path)
-        return cleansed_file_path
-
-    def CALL_SMOOTHENING_FUNC(self,raw_csv_path):
-        """
-        :param raw_csv_path:
-        :return:smoothened_file_csv_path
-        """
-        self.smoothened_file_path="c:\smoothened_data.csv"
-        sg.Popup("****smoothened data in the path :%s *******"%smoothened_file_path)
-        return smoothened_file_path
+#    def CALL_CLEANSING_FUNC(self,raw_csv_path):
+#        """
+#        :param raw_csv_path:
+#        :return:cleansed_file_csv_path
+#        """
+#        cleansed_file_path= raw_csv_path #"c:\cleansedData.csv"
+#        sg.Popup("****cleansed data in the path :%s *******"%cleansed_file_path)
+#        return cleansed_file_path
+#
+#    def CALL_SMOOTHENING_FUNC(self,raw_csv_path):
+#        """
+#        :param raw_csv_path:
+#        :return:smoothened_file_csv_path
+#        """
+#        self.smoothened_file_path="c:\smoothened_data.csv"
+#        sg.Popup("****smoothened data in the path :%s *******"%smoothened_file_path)
+#        return smoothened_file_path
 
     def funtionToFindY(self,values):
         """
-        :return:
+        :return: 
         """
         CSV_to__data=values[2]
 
-        if CSV_to__data == "cleansed_csv":
+        if CSV_to__data =="cleansed_csv":
             file_path = cleansed_file_path
         elif CSV_to__data == "smoothened_csv":
             file_path = smoothened_file_path
@@ -423,13 +424,19 @@ if __name__ == "__main__":
 
     sg.ChangeLookAndFeel('GreenTan')
     obj_GUI = MyGUI()
+    obj_data_input=data_input()
 
     #1.Getting raw csv path
     raw_csv_path = obj_GUI.INPUT_CSV()[0]
     print(raw_csv_path)
+    
+    #2.processing the raw csv path
+    obj_GUI.cal_progress_meter("processing_raw_input_csv_file")
+    cleansed_file_path = obj_data_input.cleaned_file_path(raw_csv_path)
+    obj_GUI.InputWindow.Close()
 
     #reading the csv path to get the headers of the csv
-    df = pd.read_csv(raw_csv_path)
+    df = pd.read_csv(cleansed_file_path)
     coloumnNames=list(df.columns)
     #form the list of Input parameters to appear in gui
     list_of_input_parmeters=[]
@@ -437,20 +444,16 @@ if __name__ == "__main__":
         list_of_input_parmeters.append((coloumnNames[0]+"->"+coloumnNames[i]))
     print(list_of_input_parmeters)
 
-    #2.processing the raw csv path
-    obj_GUI.cal_progress_meter("processing_raw_input_csv_file")
-    cleansed_file_path = obj_GUI.CALL_CLEANSING_FUNC(raw_csv_path)
-    obj_GUI.InputWindow.Close()
-
+    
     # 3.option to smoothen data
     values = sg.Popup("Do you want smoothen data", button_type=sg.POPUP_BUTTONS_YES_NO)
     print(values)
     smoothened_file_path=None
     if values == "Yes":
-        raw_csv_path = obj_GUI.INPUT_CSV()
+        raw_csv_path = obj_GUI.INPUT_CSV()[0]
 
         obj_GUI.cal_progress_meter("processing raw smoothened file")
-        smoothened_file_path = obj_GUI.CALL_SMOOTHENING_FUNC(raw_csv_path)
+        smoothened_file_path = obj_data_input.Smoothing_file_path(raw_csv_path)
         obj_GUI.InputWindow.Close()
 
     #mian window for computation
