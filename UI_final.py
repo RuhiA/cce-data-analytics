@@ -5,21 +5,22 @@ import matplotlib
 matplotlib.use("TKAgg")
 from matplotlib import pyplot as plt
 from tabulate import tabulate
+import pandas as pd
 from lr_utils import *
 Title = "sri venkateshwara Book Store"
 
-PROGRESS_METER_DELAY = 1
+PROGRESS_METER_DELAY = 60
 class MyGUI():
 
   
-    def SINGLE_LAYOUT(self,cleansed_data_path=None,smoothened_data_path=None):
+    def SINGLE_LAYOUT(self,cleansed_data_path=None,smoothened_data_path=None,list_of_input_parmeters=None):
 
         layout=[[sg.Text('Cleansed data CSV file')],
                 [sg.InputText('%s'%cleansed_data_path)],  #1
                 [sg.Text('Smoothened data CSV file')],
                 [sg.InputText('%s'%smoothened_data_path)],  #2
                 [sg.InputCombo(('cleansed_csv', 'smoothened_csv'), size=(20, 3))],
-                [sg.Listbox(values=('y->x1', 'y->x2', 'y->x3'), size=(55, 3))],
+                [sg.Listbox(values=list_of_input_parmeters, size=(55, 3))],
                 [sg.Button("SCATTER_PLOT")],
                 [sg.Text('Linear Regression')],
                 [sg.Button("GENERATE LINEAR MODEL RETURN ANOVA TABLE")],
@@ -37,18 +38,13 @@ class MyGUI():
                 [sg.Text('x')],
                 [sg.Button("CALCUALATE_Y for parabolic function")],
                 [sg.Button("CALCUALATE_Y for exponential function")],
-                [sg.Button("ACF")],
-                [sg.Button("PACF")],
-                [sg.Button("t-series")],
-                [sg.Button("ARIMA_MODELLING")],
-                [sg.Button("SYNTHETIC DATA GENERATION")]
-
+                [sg.Button("ACF",pad=(35,2)),sg.Button("PACF",pad=(35,3)),sg.Button("t-series",pad=(35,4))],
+                [sg.Button("ARIMA_MODELLING",pad=(5,2)),sg.Button("SYNTHETIC DATA GENERATION",pad=(5,3))]
 
                 ]
         self.window = sg.Window(Title, default_element_size=(40, 1)).Layout(layout)
         self.button, self.values = self.window.Read()
         if self.button == "SCATTER_PLOT":
-           # self.scatter_plot('XValues','YValues','The Scatter plot',[0,1,2],[3,4,5])
             self.scatter_plot(self.values)
         elif self.button == "GENERATE LINEAR MODEL RETURN ANOVA TABLE":
             self.generateLinearModel(self.values)
@@ -70,8 +66,6 @@ class MyGUI():
             self.arima_modelling_call_function()
         elif self.button == "SYNTHETIC DATA GENERATION":
             self.Synthetic_Data_Generation_call_func()
-
-
 
         print("%s"%self.button)
         print(self.values)
@@ -119,20 +113,30 @@ class MyGUI():
         cleansed_file_path= raw_csv_path #"c:\cleansedData.csv"
         sg.Popup("****cleansed data in the path :%s *******"%cleansed_file_path)
         return cleansed_file_path
+
     def CALL_SMOOTHENING_FUNC(self,raw_csv_path):
         """
         :param raw_csv_path:
         :return:smoothened_file_csv_path
         """
-        smoothened_file_path="c:\smoothened_data.csv"
+        self.smoothened_file_path="c:\smoothened_data.csv"
         sg.Popup("****smoothened data in the path :%s *******"%smoothened_file_path)
         return smoothened_file_path
+
     def funtionToFindY(self,values):
         """
         :return:
         """
-        file_path=values[2]
-        #file_path = "test/data/multivariate_4-date.csv"  # TODO : Provide the path of the file
+        CSV_to__data=values[2]
+
+        if CSV_to__data == "cleansed_csv":
+            file_path = cleansed_file_path
+        elif CSV_to__data == "smoothened_csv":
+            file_path = smoothened_file_path
+            if smoothened_file_path == None:
+                sg.Popup("smootehning is not done , please select cleansed csv option")
+                return
+        #file_path = "C:/Users/sbabu/Desktop/cce-data-analytics-master/CCE_DATA_ANALYTICS_MASTERRRR/test/data/multivariate_4-date.csv"  # TODO : Provide the path of the file
         dataSet = pd.read_csv(file_path)
         y_column = dataSet.columns[0]
         y = 0
@@ -188,12 +192,7 @@ class MyGUI():
         list_of_messages=[]
         for corr_value in response.r_values:
             list_of_messages.append(corr_value.logMessage)
-
-        multicollinearity_messages=[]
-        for corr_value in response.multicollienary_r_values:
-            multicollinearity_messages.append(corr_value.logMessage)
-        BOLD = '\033[1m'   
-        sg.Popup("********Below are the correlation coefficients**********",*list_of_messages, "******* Below are the multicollinearity correlation coefficients **********",*multicollinearity_messages," ===== Final equation =====",\
+        sg.Popup("below are the correlation coefficients",*list_of_messages,"Final equation",\
                  response.equtation_str,"Y value determined for given x values ",str(y))
 
 
@@ -205,13 +204,21 @@ class MyGUI():
         """
 
         CSV_FILE_PATH=values[2]
+        CSV_to_plot_data_path = ""
+        if CSV_FILE_PATH == "cleansed_csv":
+            file_path = cleansed_file_path
+        elif CSV_FILE_PATH == "smoothened_csv":
+            file_path = smoothened_file_path
+            if smoothened_file_path == None:
+                sg.Popup("smootehning is not done , please select cleansed csv option")
+                return
 
 
         self.cal_progress_meter("generating linear model")
 
         ## Added By Ruhi 
         #file_path = "test/data/multivariate_4-date.csv" # TODO : Provide the path of the file
-        file_path=values[2]
+        #file_path=values[2]
         dataSet = pd.read_csv(file_path)
         y_column = dataSet.columns[0]
         x_columns = list(dataSet.columns[1:])
@@ -239,6 +246,7 @@ class MyGUI():
         sg.Table(End_table)
 
         sg.Popup("ANOVA_TABLE",End_table)
+
     def Get_y_and_x_data(self,csv_file_path,get_y_and_x_flag):
         """
 
@@ -246,29 +254,40 @@ class MyGUI():
         :param get_y_and_x_flag:
         :return:
         """
-        #get the data from the data input team
-        if get_y_and_x_flag=="y->x1":
-            #get y and x1 data in list form
-            y=[1,2,3,4,5,6,7,8,9,10]
-            x =[3,5,1,7,2,6,4,7,1,4]
-        elif get_y_and_x_flag=="y->x2":
-            #get y and x2 data in list form
-            y=[1,2,3,4,5,6,7,8,9,10]
-            x =[3,5,1,7,2,6,4,7,1,4]
-        elif get_y_and_x_flag == "y->x3":
-            # get y and x3 data in list form
-            y = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-            x = [3, 5, 1, 7, 2, 6, 4, 7, 1, 4]
-        else:
+        if get_y_and_x_flag==[]:
             print("no arg selected")
             sg.Popup("please select the arg to plot the data")
+            return
+        df = pd.read_csv(csv_file_path)
+        coloumnNames = list(df.columns)
+        y=list(df[coloumnNames[0]])
+        x=[]
+        for i in range(len(list_of_input_parmeters)):
+
+            if get_y_and_x_flag == list_of_input_parmeters[i]:
+
+                x =list(df[coloumnNames[i+1]])
+                break
+            else:
+                continue
+
         return y,x
+
     def scatter_plot(self,values,linearDataList=[]):
         """
         """
         print(values)
 
         CSV_to_plot_data=values[2]
+        CSV_to_plot_data_path=""
+        if CSV_to_plot_data == "cleansed_csv":
+            CSV_to_plot_data_path=cleansed_file_path
+        elif  CSV_to_plot_data == "smoothened_csv":
+            CSV_to_plot_data_path = smoothened_file_path
+            if smoothened_file_path == None:
+                sg.Popup("smootehning is not done , please select cleansed csv option")
+                return
+
         sg.Popup("chosen csv file:%s"%CSV_to_plot_data)
         if values[3] == []:
             sg.Popup("Select the args (y-> x1 or x2 or x3)")
@@ -276,9 +295,12 @@ class MyGUI():
         get_y_and_x_flag=values[3][0]
         y=[]
         x=[]
-        y,x = self.Get_y_and_x_data(CSV_to_plot_data,get_y_and_x_flag)
+        y,x = self.Get_y_and_x_data(CSV_to_plot_data_path,get_y_and_x_flag)
         print(y)
         print(x)
+        if len(y)!=len(x):
+            sg.Popup("y and x axis data is not aligned , please check with data input team")
+            return
         print("send the csv plot and get the values")
         fig = plt.figure(get_y_and_x_flag)
         ax = fig.add_subplot(1,1,1)
@@ -313,8 +335,6 @@ class MyGUI():
          [sg.Submit(), sg.Cancel()]
         ]
 
-
-
         self.InputWindow = sg.Window(Title, default_element_size=(40, 1)).Layout(layout)
         button, values = self.InputWindow.Read()
         if button == "Cancel":
@@ -331,11 +351,10 @@ class MyGUI():
          [sg.Ok(), sg.Cancel()]
         ]
 
-
-
         self.smoothenedWindow = sg.Window(Title, default_element_size=(40, 1)).Layout(layout)
         button, values = self.smoothenedWindow.Read()
         #sg.Popup(button, values)
+
     def funtionToFindY_parabloic(self,values):
         """
         :return:
@@ -392,19 +411,33 @@ class MyGUI():
 
         sg.Popup(Title,End_table)
 
+
+
 # Run the program
 if __name__ == "__main__":
 
     sg.ChangeLookAndFeel('GreenTan')
     obj_GUI = MyGUI()
 
+    #1.Getting raw csv path
+    raw_csv_path = obj_GUI.INPUT_CSV()[0]
+    print(raw_csv_path)
 
-    raw_csv_path = obj_GUI.INPUT_CSV()
+    #reading the csv path to get the headers of the csv
+    df = pd.read_csv(raw_csv_path)
+    coloumnNames=list(df.columns)
+    #form the list of Input parameters to appear in gui
+    list_of_input_parmeters=[]
+    for i in range(1,len(coloumnNames)):
+        list_of_input_parmeters.append((coloumnNames[0]+"->"+coloumnNames[i]))
+    print(list_of_input_parmeters)
 
+    #2.processing the raw csv path
     obj_GUI.cal_progress_meter("processing_raw_input_csv_file")
     cleansed_file_path = obj_GUI.CALL_CLEANSING_FUNC(raw_csv_path)
     obj_GUI.InputWindow.Close()
 
+    # 3.option to smoothen data
     values = sg.Popup("Do you want smoothen data", button_type=sg.POPUP_BUTTONS_YES_NO)
     print(values)
     smoothened_file_path=None
@@ -415,11 +448,12 @@ if __name__ == "__main__":
         smoothened_file_path = obj_GUI.CALL_SMOOTHENING_FUNC(raw_csv_path)
         obj_GUI.InputWindow.Close()
 
-    obj_GUI.SINGLE_LAYOUT(cleansed_file_path,smoothened_file_path)
+    #mian window for computation
+    obj_GUI.SINGLE_LAYOUT(cleansed_file_path,smoothened_file_path,list_of_input_parmeters)
     values = sg.Popup("Do you want to do more Computation or continue", button_type=sg.POPUP_BUTTONS_YES_NO)
     while values == 'Yes':
         obj_GUI.window.Close()
-        obj_GUI.SINGLE_LAYOUT(cleansed_file_path,smoothened_file_path)
+        obj_GUI.SINGLE_LAYOUT(cleansed_file_path,smoothened_file_path,list_of_input_parmeters)
         values = sg.Popup("Do you want to do more Computation or continue", button_type=sg.POPUP_BUTTONS_YES_NO)
 
     print("END")
