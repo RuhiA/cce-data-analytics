@@ -2,7 +2,7 @@
 2. There is 1 test file in this folder - River_Flow.csv. It is on this file that ARIMA analysis is performed. It is monthly averaged version of the file e-mailed by Badari sir.
 3. There is 1 jupyter notebook - ARIMA.ipynb, which runs directly on browser.
 4. This code does the AR. MA part is skipped(as it is beyond the scope of this project) as discussed with Badari sir.
-5. The file could be run as:  py ARIMA.py
+5. The file could be run as:  python ARIMA.py
 6. Apart from plots, it also outputs various values on console.
 
 
