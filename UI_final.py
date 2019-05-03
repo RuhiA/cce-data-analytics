@@ -192,7 +192,12 @@ class MyGUI():
         list_of_messages=[]
         for corr_value in response.r_values:
             list_of_messages.append(corr_value.logMessage)
-        sg.Popup("below are the correlation coefficients",*list_of_messages,"Final equation",\
+
+        multicollinearity_messages=[]
+        for corr_value in response.multicollienary_r_values:
+            multicollinearity_messages.append(corr_value.logMessage)
+
+        sg.Popup("********Below are the correlation coefficients**********",*list_of_messages, "******* Below are the multicollinearity correlation coefficients **********",*multicollinearity_messages," ===== Final equation =====",\
                  response.equtation_str,"Y value determined for given x values ",str(y))
 
 
