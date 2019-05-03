@@ -13,6 +13,7 @@ class LinearRegressionResponse:
 	equtation_str : None
 	equation_params : None
 	r_values : []
+	multicollienary_r_values : []
 	anova : AnovaResponse()
 	
 class CorrelationCoeff :
@@ -70,7 +71,7 @@ def find_corr_coeff(dataSet, featureColumn, actualValueColumn) :
 	corr.corr_value = cor_r
 	corr.isSignificant = (abs(cor_r) > (1.96/math.sqrt(len(dataSet)))) 
 	significant_stmt = "It is significant" if corr.isSignificant else "It is not significant"
-	corr.logMessage = "Correlation Coefficient of feature column '%s' with value column '%s' is %s. %s." % (featureColumn, actualValueColumn, cor_r, significant_stmt)
+	corr.logMessage = "Correlation Coefficient of column '%s' with column '%s' is %s. %s." % (featureColumn, actualValueColumn, cor_r, significant_stmt)
 	return corr
 
 def check_correlation_coeff(data , valueColumn, *featureColumns ) :
@@ -79,14 +80,17 @@ def check_correlation_coeff(data , valueColumn, *featureColumns ) :
 	for feature in featureColumns:
 		corr_value = find_corr_coeff(data, feature, valueColumn)
 		corr_coeff_arr.append(corr_value)
-
-	# find multicollinearity
-	for feature1 in featureColumns:
-		for feature2 in featureColumns:
-			if(feature1 != feature2) :
-				corr_value = find_corr_coeff(data, feature1, feature2)
-				corr_coeff_arr.append(corr_value)
 	return corr_coeff_arr		
+
+def check_multicollinearity(data, *featureColumns ) :
+	corr_coeff_arr = []
+	# find multicollinearity
+	for i in range(len(featureColumns)):
+		for j in range(len(featureColumns)):
+			if(j < i) :
+				corr_value = find_corr_coeff(data, featureColumns[i], featureColumns[j])
+				corr_coeff_arr.append(corr_value)
+	return corr_coeff_arr	
 
 def find_parameters_for_multivariate(dataset, actualValueColumn, *featureColumn ) :
 	features = list(featureColumn)

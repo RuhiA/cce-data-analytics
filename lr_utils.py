@@ -7,6 +7,7 @@ class LinearRegression :
 		dataSet = pd.read_csv(inputFile)
 		response = LinearRegressionResponse()
 		r_values = check_correlation_coeff(dataSet,targetColumn, *features)
+		multicollienary_r_values = check_multicollinearity(dataSet, *features)
 		params = find_parameters_for_multivariate(dataSet,targetColumn,*features)
 		strval = display_linear_equation(params, *features)
 		y_arr = dataSet[targetColumn]
@@ -15,6 +16,7 @@ class LinearRegression :
 		response.r_values = r_values
 		response.equtation_str = strval
 		response.equation_params = params
+		response.multicollienary_r_values = multicollienary_r_values
 		response.anova = anova_response
 		return response
 

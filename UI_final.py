@@ -8,7 +8,7 @@ from tabulate import tabulate
 from lr_utils import *
 Title = "sri venkateshwara Book Store"
 
-PROGRESS_METER_DELAY = 5
+PROGRESS_METER_DELAY = 1
 class MyGUI():
 
   
@@ -132,7 +132,7 @@ class MyGUI():
         :return:
         """
         file_path=values[2]
-        #file_path = "C:/Users/sbabu/Desktop/cce-data-analytics-master/CCE_DATA_ANALYTICS_MASTERRRR/test/data/multivariate_4-date.csv"  # TODO : Provide the path of the file
+        #file_path = "test/data/multivariate_4-date.csv"  # TODO : Provide the path of the file
         dataSet = pd.read_csv(file_path)
         y_column = dataSet.columns[0]
         y = 0
@@ -188,7 +188,12 @@ class MyGUI():
         list_of_messages=[]
         for corr_value in response.r_values:
             list_of_messages.append(corr_value.logMessage)
-        sg.Popup("below are the correlation coefficients",*list_of_messages,"Final equation",\
+
+        multicollinearity_messages=[]
+        for corr_value in response.multicollienary_r_values:
+            multicollinearity_messages.append(corr_value.logMessage)
+        BOLD = '\033[1m'   
+        sg.Popup("********Below are the correlation coefficients**********",*list_of_messages, "******* Below are the multicollinearity correlation coefficients **********",*multicollinearity_messages," ===== Final equation =====",\
                  response.equtation_str,"Y value determined for given x values ",str(y))
 
 
