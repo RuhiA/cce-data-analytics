@@ -53,6 +53,7 @@ def get_correlogram_test():
 	plt.xlim(0, number_of_lags)
 	for pt in points:
 		plt.plot( [pt[0],pt[0]], [0,pt[1]])
+	plt.axhline(y=0, color='k')
 	plt.show()
 
 # get_correlogram_test()
