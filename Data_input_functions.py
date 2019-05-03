@@ -129,13 +129,19 @@ class data_input():
         return new_df
     def cleaned_file_path(self,x):       
         cleandata=self.cleansing(x)
-        cleandata.to_csv('Cleaned_data_2019.csv',index=False)
-        path=os.path.normpath(os.getcwd()+'\\Cleaned_data_2019.csv')
+        pos1=x.rfind('/')
+        pos2=x.rfind('.')
+        path1=x[pos1+1:pos2]
+        cleandata.to_csv(path1+'_cleaned_data.csv',index=False)
+        path=os.path.normpath(os.getcwd()+'\\'+path1+'_cleaned_data.csv')
         return path
     
     def Smoothing_file_path(self,x):
         cleandata=self.cleansing(x)
         smooth_df=self.Smoothing(cleandata)
-        smooth_df.to_csv('smoothened_data_2019.csv',index=False)
-        smoothen_path=os.path.normpath(os.getcwd()+'\\smoothened_data_2019.csv')
+        pos1=x.rfind('/')
+        pos2=x.rfind('.')
+        path1=x[pos1+1:pos2]
+        smooth_df.to_csv(path1+'_smoothened_data.csv',index=False)
+        smoothen_path=os.path.normpath(os.getcwd()+'\\'+path1+'_smoothened_data.csv')
         return smoothen_path
