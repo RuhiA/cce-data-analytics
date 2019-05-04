@@ -17,6 +17,12 @@ def csv_reader_for_univariate(input_file):
 
 def get_pacf_integration_csv(input_file, number_of_lags):
 	Y_axis_time_series_data = csv_reader_for_univariate(input_file)
+	X_axis_time = []
+	for i in range(1, len(Y_axis_time_series_data) + 1):
+		X_axis_time.append(i)
+	plt.plot(X_axis_time, Y_axis_time_series_data)
+	plt.show()
+
 	rows = get_rows_to_write_to_pacf_file(Y_axis_time_series_data, number_of_lags)
 	write_rows_to_pacf_file(rows)
 	Y_axis_PACF = call_linear_regression(number_of_lags)
@@ -30,6 +36,9 @@ def get_pacf_integration_csv(input_file, number_of_lags):
 	for pt in points:
 		plt.plot( [pt[0],pt[0]], [0,pt[1]])
 	plt.axhline(y=0, color='k')
+	threshold = 1.96 / len(Y_axis_time_series_data)
+	plt.axhline(y=threshold, color='k', linestyle='dashed')
+	plt.axhline(y=-threshold, color='k', linestyle='dashed')
 	plt.show()
 	
 

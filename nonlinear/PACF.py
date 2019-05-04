@@ -53,6 +53,12 @@ def call_linear_regression(number_of_lags):
 def get_pacf_test():
 	# Y = [1,2,3,4,5,6,7,8,9,10]
 	Y = [266,145.9,183.1,119.3,180.3,168.5,231.8,224.5,192.8,122.9,336.5,185.9,194.3,149.5,210.1,273.3,191.4,287,226,303.6,289.9,421.6,264.5,342.3,339.7,440.4,315.9,439.3,401.3,437.4,575.5,407.6,682,475.3,581.3,646.9]
+	X_axis_time = []
+	for i in range(1, len(Y) + 1):
+		X_axis_time.append(i)
+	plt.plot(X_axis_time, Y)
+	plt.show()
+
 	number_of_lags = 10
 	rows = get_rows_to_write_to_pacf_file(Y, number_of_lags)
 	write_rows_to_pacf_file(rows)
@@ -68,6 +74,9 @@ def get_pacf_test():
 	for pt in points:
 		plt.plot( [pt[0],pt[0]], [0,pt[1]])
 	plt.axhline(y=0, color='k')
+	threshold = 1.96 / len(Y_axis_time_series_data)
+	plt.axhline(y=threshold, color='k', linestyle='dashed')
+	plt.axhline(y=-threshold, color='k', linestyle='dashed')
 	plt.show()
 
 # get_pacf_test()
