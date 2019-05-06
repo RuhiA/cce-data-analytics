@@ -54,5 +54,4 @@ def fit_non_regression_quadratic_integration_equation_test():
 	find_Y_hat_at_X = 5
 	fit_non_regression_quadratic_integration_equation(thefile, find_Y_hat_at_X)
 
-
 fit_non_regression_quadratic_integration_equation_test()

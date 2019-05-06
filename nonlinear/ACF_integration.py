@@ -17,11 +17,26 @@ def csv_reader_for_univariate(input_file):
 
 def get_correlogram_integration_csv(input_file, number_of_lags):
 	Y_axis_time_series_data = csv_reader_for_univariate(input_file)
+	X_axis_time = []
+	for i in range(1, len(Y_axis_time_series_data) + 1):
+		X_axis_time.append(i)
+	plt.plot(X_axis_time, Y_axis_time_series_data)
+	plt.show()
 	Y_axis_ACF = get_correlogram(Y_axis_time_series_data, number_of_lags)
 	X_axis_lag = []
 	for i in range(1, number_of_lags + 1):
 		X_axis_lag.append(i)
-	plt.step(X_axis_lag, Y_axis_ACF)
+	print(Y_axis_ACF)	
+	points = []
+	for lag in range(1, number_of_lags + 1):
+		points.append((X_axis_lag[lag-1], Y_axis_ACF[lag-1]))
+	plt.xlim(0, number_of_lags)
+	for pt in points:
+		plt.plot( [pt[0],pt[0]], [0,pt[1]])
+	plt.axhline(y=0, color='k')
+	threshold = 1.96 / len(Y_axis_time_series_data)
+	plt.axhline(y=threshold, color='k', linestyle='dashed')
+	plt.axhline(y=-threshold, color='k', linestyle='dashed')
 	plt.show()
 	
 
@@ -31,4 +46,4 @@ def get_correlogram_integration_csv_test():
 
 	get_correlogram_integration_csv(thefile, 20)
 
-# get_correlogram_integration_csv_test()
+get_correlogram_integration_csv_test()
