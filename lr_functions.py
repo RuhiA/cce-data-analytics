@@ -13,6 +13,7 @@ class LinearRegressionResponse:
 	equtation_str : None
 	equation_params : None
 	r_values : []
+	pr_values : []
 	multicollienary_r_values : []
 	anova : AnovaResponse()
 	
@@ -29,7 +30,6 @@ def sum_of_columns( dataSet, columnName) :
 	return sum(dataSet[columnName])
 
 def mean_of_column( dataSet, columnName) :
-	print(columnName)
 	return round_float(sum(dataSet[columnName])/len(dataSet))
 
 def sum_of_x_minus_x_bar( dataSet, columnName) :
@@ -80,7 +80,7 @@ def check_correlation_coeff(data , valueColumn, *featureColumns ) :
 	for feature in featureColumns:
 		corr_value = find_corr_coeff(data, feature, valueColumn)
 		corr_coeff_arr.append(corr_value)
-	return corr_coeff_arr		
+	return corr_coeff_arr				
 
 def check_multicollinearity(data, *featureColumns ) :
 	corr_coeff_arr = []
@@ -91,6 +91,43 @@ def check_multicollinearity(data, *featureColumns ) :
 				corr_value = find_corr_coeff(data, featureColumns[i], featureColumns[j])
 				corr_coeff_arr.append(corr_value)
 	return corr_coeff_arr	
+
+
+def find_partial_corr_coeff(dataSet, target_column, feature_column_name, residue1, residue2) :
+	cor_num = covariance(dataSet, residue2, residue1)
+	standard_deviationOfFeatureColumn = standard_deviation(dataSet, residue2)
+	standard_deviationOfValueColumn = standard_deviation(dataSet, residue1)
+	cor_r = round_float((cor_num)/(standard_deviationOfFeatureColumn*standard_deviationOfValueColumn))
+	corr = CorrelationCoeff()
+	corr.param1 = residue2
+	corr.param2 = residue1
+	corr.corr_value = cor_r
+	corr.isSignificant = (abs(cor_r) > (1.96/math.sqrt(len(dataSet)))) 
+	significant_stmt = "It is significant" if corr.isSignificant else "It is not significant"
+	corr.logMessage = "Partial correlation Coefficient of column '%s' with column '%s' is %s. %s." % (target_column, feature_column_name, cor_r, significant_stmt)
+	return corr
+
+
+def calc_partial_correlation_coeff(dataSet, targetColumn, feature1, *remaining_fetaures) :
+	y_arr = dataSet[targetColumn]
+	params1 = find_parameters_for_multivariate(dataSet,targetColumn,feature1)
+	ycap1_arr = calcualate_y_cap(dataSet, params1, targetColumn, feature1)
+	dataSet['residue1_col'] = ycap1_arr - y_arr
+
+	params2 = find_parameters_for_multivariate(dataSet,targetColumn,*remaining_fetaures)
+	ycap2_arr = calcualate_y_cap(dataSet, params2, targetColumn, *remaining_fetaures)
+	dataSet['residue2_col'] = ycap2_arr - y_arr
+	corr_value = find_partial_corr_coeff(dataSet,targetColumn,feature1,"residue1_col", "residue2_col")
+	return corr_value
+
+def calc_all_partial_corr_coeff(dataset, actualValueColumn, *featureColumn ) :
+	corr_coeff_arr = []
+	for i in range(len(featureColumn)) :
+		featues = list(featureColumn)
+		del featues[i]
+		corr_value = calc_partial_correlation_coeff(dataset, actualValueColumn,featureColumn[i], *featues)
+		corr_coeff_arr.append(corr_value)
+	return corr_coeff_arr
 
 def find_parameters_for_multivariate(dataset, actualValueColumn, *featureColumn ) :
 	features = list(featureColumn)

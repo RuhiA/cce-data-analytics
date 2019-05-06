@@ -7,6 +7,7 @@ class LinearRegression :
 		dataSet = pd.read_csv(inputFile)
 		response = LinearRegressionResponse()
 		r_values = check_correlation_coeff(dataSet,targetColumn, *features)
+		pr_values = calc_all_partial_corr_coeff(dataSet,targetColumn, *features)
 		multicollienary_r_values = check_multicollinearity(dataSet, *features)
 		params = find_parameters_for_multivariate(dataSet,targetColumn,*features)
 		strval = display_linear_equation(params, *features)
@@ -14,6 +15,7 @@ class LinearRegression :
 		ycap_arr = calcualate_y_cap(dataSet, params, targetColumn, *features)
 		anova_response = calculate_f_statistic(y_arr, ycap_arr, len(params), 0.05)
 		response.r_values = r_values
+		response.pr_values = pr_values
 		response.equtation_str = strval
 		response.equation_params = params
 		response.multicollienary_r_values = multicollienary_r_values
@@ -23,7 +25,7 @@ class LinearRegression :
 	def estimate_value(self, params, *featureValue) :
 		parameters = params[:-1]
 		output = (parameters.dot(featureValue)) + params[-1]
-		return output
+		return round_float(output)
 
 	def solve_and_estimate(self, inputFile, targetColumn, *featuresAndValue):
 		features =[elem.split('=', 1)[0] for elem in featuresAndValue]

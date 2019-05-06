@@ -9,7 +9,7 @@ import pandas as pd
 from lr_utils import *
 Title = "sri venkateshwara Book Store"
 
-PROGRESS_METER_DELAY = 60
+PROGRESS_METER_DELAY = 1
 class MyGUI():
 
   
@@ -197,7 +197,11 @@ class MyGUI():
         for corr_value in response.multicollienary_r_values:
             multicollinearity_messages.append(corr_value.logMessage)
 
-        sg.Popup("********Below are the correlation coefficients**********",*list_of_messages, "******* Below are the multicollinearity correlation coefficients **********",*multicollinearity_messages," ===== Final equation =====",\
+        partial_corr_messages=[]
+        for corr_value in response.pr_values:
+            partial_corr_messages.append(corr_value.logMessage)
+
+        sg.Popup("********Below are the correlation coefficients**********",*list_of_messages, "******* Below are the multicollinearity correlation coefficients **********",*multicollinearity_messages,"********Below are the partial correlation coefficients**********",*partial_corr_messages," ===== Final equation =====",\
                  response.equtation_str,"Y value determined for given x values ",str(y))
 
 
