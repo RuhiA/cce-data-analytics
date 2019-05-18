@@ -30,11 +30,13 @@ def fit_non_regression_exponential_integration_equation(input_file, find_Y_hat_a
 	Y,X = csv_reader_for_bivariate(input_file)
 	a, b = fit_non_regression_exponential_equation(X, Y)
 	print('a.b^x')
-	print('y = {0} * {1} ^x '.format(a,b))
+	print('y = {0} * {1} ^x '.format(round(a,2),round(b,2)))
 	Y_hat = get_non_linear_exponential_estimated_values_of_y(a, b, X)
 	plt.scatter(X, Y)
 	plt.plot(X, Y_hat)
 	plt.show()
+	print("For value of x: {0}".format(find_Y_hat_at_X))
+	print("Value of y is:")
 	print(get_non_linear_exponential_estimated_value_of_y(a, b, find_Y_hat_at_X))
 	degreesOfFreedom = 1
 	alpha_value = 0.05

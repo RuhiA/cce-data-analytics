@@ -31,11 +31,13 @@ def fit_non_regression_quadratic_integration_equation(input_file, find_Y_hat_at_
 	Y,X = csv_reader_for_bivariate(input_file)
 	solved_parameters = fit_non_regression_quadratic_equation(X, Y)
 	print("y = m1 x^2 + m2 x + c")
-	print('y = {0} x^2 + {1} x + {2}'.format(solved_parameters[0], solved_parameters[1], solved_parameters[2]))
+	print('y = {0} x^2 + {1} x + {2}'.format(round(solved_parameters[0],2), round(solved_parameters[1],2), round(solved_parameters[2],2)))
 	Y_hat = get_non_linear_quadratic_estimated_values_of_y(solved_parameters, X)
 	plt.scatter(X, Y)
 	plt.plot(X, Y_hat)
 	plt.show()
+	print("For value of x: {0}".format(find_Y_hat_at_X))
+	print("Value of y is:")
 	print(get_non_linear_quadratic_estimated_value_of_y(solved_parameters, find_Y_hat_at_X))
 	degreesOfFreedom = 1
 	alpha_value = 0.05
